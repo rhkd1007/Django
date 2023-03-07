@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="container">
+	<h3>상세보기</h3>
+	<table class="table table-bordered">
+		<tr>
+			<th>글번호</th>
+			<td>{{board.id}}</td>
+			<th>조회수</th>
+			<td>{{board.hit}}</td>
+		</tr>
+		<tr>
+			<th>작성자</th>
+			<td>{{board.writer}}</td>
+			<th>작성일</th>
+			<td>{{board.post_date}}</td>
+		</tr>
+		<tr>
+			<th>글내용</th>
+			<td colspan="3">{{board.content}}</td>
+		</tr>
+		<tr>
+			<th>파일</th>
+			<td colspan="3">{{board.filename}}</td>
+		</tr>
+	</table>
+	<button type="button" class="btn btn-secondary btn-sm _update" data-url="/update/{{board.id}}">수정</button>
+	<button type="button" 
+	  class="btn btn-danger btn-sm _delete"
+		data-url="/delete/{{board.id}}">삭제</button>
+	<!-- <a href="/update/{{board.id}}"><button type="button" class="btn btn-secondary btn-sm _update">수정</a></button>
+	<a href="/delete/{{board.id}}"><button type="button" 
+	  class="btn btn-danger btn-sm _delete">삭제</a></button> -->
+
+	<br/><br/>
+
+	<form action="/comment_insert/" method="post">
+		<input type="hidden" name="id" value="{{board.id}}">
+	  <div class="form-group">
+			<label for="content">Comment:</label>
+		  <textarea class="form-control" rows="5" id="content" name="content"></textarea>
+	  </div>
+		<button type="submit" class="btn btn-success btn-sm">Comment Write</button>
+	</form>
+	<br/><br/>
+
+	<div class="mt-3">
+		comment({{board.comment_set.count}})
+	</div>
+	{% if board.comment_set.count > 0 %}
+	<div>
+		{% for comment in board.comment_set.all%}
+		<div>
+			<span>{{comment.content}}</span>
+			<span>-{{comment.writer}} : {{comment.post_date | date:'Y-m-d'}}</span>
+			{% if comment.writer == user %}
+			<span>
+				<form action="/comment_insert/" method="post">
+				 <input type="hidden" name="id" value="{{board.id}}">
+				 <button type="submit" class="btn btn-success btn-sm">삭제</button>
+			  </form>
+			</span>
+			{% endif %}
+		</div>		
+		{% endfor %}
+	</div>
+	{% endif %}
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+$("._delete").on('click',function(){
+	alert('정말 삭제할까요?')
+	location.href="/delete/{{board.id}}"
+})
+
+$("._update").on('click',function(){
+	alert('정말 수정할까요?')
+	location.href="/update/{{board.id}}"
+})
+
+</script>
+{% endblock %}
